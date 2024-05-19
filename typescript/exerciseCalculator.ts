@@ -14,9 +14,6 @@ const parseExerciseArguments = (args: string[]): ExerciseCalcValues => {
     throw new Error("Some of the provided values were not numbers");
   }
 
-  let goal: number;
-  let days: number[];
-
   if (args.length > 5) {
     return {
       days: args.slice(2, args.length - 1).map((arg) => Number(arg)),
