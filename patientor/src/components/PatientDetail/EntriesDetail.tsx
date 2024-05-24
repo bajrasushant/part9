@@ -1,7 +1,10 @@
-import { Box, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Diagnosis, Entry } from "../../types";
 import { useEffect, useState } from "react";
 import diagnosisService from "../../services/diagnosis";
+import HospitalEntry from "./HospitalEntry";
+import OccupationalEntry from "./OccupationalEntry";
+import RatingHealthCheckEntry from "./RatingHealthCheckEntry";
 
 interface EntriesProps {
   entries: Entry[];
@@ -21,43 +24,48 @@ const EntriesDetail = (props: EntriesProps) => {
     void fetchedDiagnosisList();
   }, []);
 
+  const assertNever = (value: never): never => {
+    throw new Error(
+      `Unhandled discriminated union member: ${JSON.stringify(value)}`,
+    );
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Typography variant="h6">entries</Typography>
-      {entries.map((entry, index) => (
-        <Box key={index} sx={{ display: "flex" }}>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="body1">
-              {entry.date}{" "}
-              <Typography sx={{ fontStyle: "italic" }} component="span">
-                {entry.description}
-              </Typography>
-            </Typography>
-            <List dense component="ul">
-              {entry.diagnosisCodes ? (
-                entry.diagnosisCodes.map((code) => {
-                  const diagnosis = diagnoses.find(
-                    (diagnosis) => diagnosis.code === code,
-                  );
-
-                  return (
-                    <ListItem key={code}>
-                      <ListItemText primary={code} />
-                      <ListItemText
-                        primary={
-                          diagnosis ? diagnosis.name : "Unknown Diagnosis"
-                        }
-                      />
-                    </ListItem>
-                  );
-                })
-              ) : (
-                <></>
-              )}
-            </List>
-          </Box>
-        </Box>
-      ))}
+      {entries.length ? <Typography variant="h6">entries</Typography> : <></>}
+      {entries.map((entry, index) => {
+        switch (entry.type) {
+          case "Hospital":
+            return (
+              <HospitalEntry
+                entry={entry}
+                key={entry.id}
+                index={index}
+                diagnoses={diagnoses}
+              />
+            );
+          case "HealthCheck":
+            return (
+              <RatingHealthCheckEntry
+                entry={entry}
+                key={entry.id}
+                index={index}
+                diagnoses={diagnoses}
+              />
+            );
+          case "OccupationalHealthcare":
+            return (
+              <OccupationalEntry
+                entry={entry}
+                key={entry.id}
+                index={index}
+                diagnoses={diagnoses}
+              />
+            );
+          default:
+            return assertNever(entry);
+        }
+      })}
     </Box>
   );
 };
