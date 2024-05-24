@@ -1,11 +1,3 @@
-export interface DiaryEntry {
-  id: number;
-  date: string;
-  weather: Weather;
-  visibility: Visibility;
-  comment?: string;
-}
-
 // export interface DiaryEntry {
 //   id: number;
 //   date: string;
@@ -14,6 +6,13 @@ export interface DiaryEntry {
 //   comment?: string;
 // }
 
+export interface DiaryEntry {
+  id: number;
+  date: string;
+  weather: Weather;
+  visibility: Visibility;
+  comment?: string;
+}
 
 
 export enum Weather {

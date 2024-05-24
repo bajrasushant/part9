@@ -1,16 +1,25 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
-import { Button, Divider, Container, Typography } from '@mui/material';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Routes,
+} from "react-router-dom";
+import { Button, Divider, Container, Typography } from "@mui/material";
 
 import { apiBaseUrl } from "./constants";
 import { Patient } from "./types";
 
 import patientService from "./services/patients";
 import PatientListPage from "./components/PatientListPage";
+import PatientDetail from "./components/PatientDetail";
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  // const [patient, setPatient] = useState<Patient | undefined>();
+
+  // const match = useMatch("/patients/:id");
 
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
@@ -21,7 +30,21 @@ const App = () => {
     };
     void fetchPatientList();
   }, []);
-  
+
+
+  // useEffect(() => {
+  //   const fetchPatient = async (id: string) => {
+  //     const fetchedPatient = await patientService.getById(id);
+  //     setPatient(fetchedPatient);
+  //   };
+
+  //   if (match?.params.id) {
+  //     void fetchPatient(String(match.params.id));
+  //   } else {
+  //     setPatient(undefined);
+  //   }
+  // }, [match]);
+
   return (
     <div className="App">
       <Router>
@@ -34,7 +57,19 @@ const App = () => {
           </Button>
           <Divider hidden />
           <Routes>
-            <Route path="/" element={<PatientListPage patients={patients} setPatients={setPatients} />} />
+            <Route
+              path="/patients/:id"
+              element={<PatientDetail />}
+            />
+            <Route
+              path="/"
+              element={
+                <PatientListPage
+                  patients={patients}
+                  setPatients={setPatients}
+                />
+              }
+            />
           </Routes>
         </Container>
       </Router>

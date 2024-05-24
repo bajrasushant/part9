@@ -9,6 +9,16 @@ router.get("/", (_req, res) => {
   res.send(patientService.getPatientsNoSsn());
 });
 
+router.get("/:id", (req, res) => {
+  const id = req.params.id;
+  const response = (patientService.getPatientById(id));
+  if (!response) {
+    res.status(404).send('Patient not found');
+  } else {
+    res.send(response);
+  }
+});
+
 router.post("/", (req, res) => {
   try {
     const newPatientEntry = toNewPatientEntry(req.body);
