@@ -1,10 +1,12 @@
-export interface BaseEntry {
+interface BaseEntry {
   id: string;
   description: string;
   date: string;
   specialist: string;
   diagnosisCodes?: Array<Diagnosis["code"]>;
 }
+
+export type BaseEntryWithoutId = Omit<BaseEntry, 'id'>;
 
 export enum HealthCheckRating {
   "Healthy" = 0,

@@ -9,27 +9,32 @@ interface DiagnosesDetailProps {
 const DiagnosesDetail = (props: DiagnosesDetailProps) => {
   const { diagnoses, entry } = props;
   return (
-    <>
+    <div>
       <Typography variant="h6">Diagnosed by: {entry.specialist}</Typography>
-
+      <Typography variant="h6">Diagnoses</Typography>
       <List dense component="ul">
-        <Typography variant="h6">Diagnoses</Typography>
-        {entry.diagnosisCodes?.map((code) => {
-          const diagnosis = diagnoses.find(
-            (diagnosis) => diagnosis.code === code,
-          );
+        {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 ? (
+          entry.diagnosisCodes?.map((code) => {
+            const diagnosis = diagnoses.find(
+              (d) => d.code === code,
+            );
 
-          return (
-            <ListItem key={code}>
-              <ListItemText primary={code} />
-              <ListItemText
-                primary={diagnosis ? diagnosis.name : "Unknown Diagnosis"}
-              />
-            </ListItem>
-          );
-        })}
+            return (
+              <ListItem key={code}>
+                <ListItemText primary={code} />
+                <ListItemText
+                  primary={diagnosis ? diagnosis.name : "Unknown Diagnosis"}
+                />
+              </ListItem>
+            );
+          })
+        ) : (
+          <ListItem>
+            <ListItemText primary="No diagnoses available" />
+          </ListItem>
+        )}
       </List>
-    </>
+    </div>
   );
 };
 
