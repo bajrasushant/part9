@@ -17,9 +17,6 @@ import PatientDetail from "./components/PatientDetail";
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
-  // const [patient, setPatient] = useState<Patient | undefined>();
-
-  // const match = useMatch("/patients/:id");
 
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
@@ -30,20 +27,6 @@ const App = () => {
     };
     void fetchPatientList();
   }, []);
-
-
-  // useEffect(() => {
-  //   const fetchPatient = async (id: string) => {
-  //     const fetchedPatient = await patientService.getById(id);
-  //     setPatient(fetchedPatient);
-  //   };
-
-  //   if (match?.params.id) {
-  //     void fetchPatient(String(match.params.id));
-  //   } else {
-  //     setPatient(undefined);
-  //   }
-  // }, [match]);
 
   return (
     <div className="App">

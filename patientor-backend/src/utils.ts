@@ -87,30 +87,27 @@ const isGender = (gender: string): gender is Gender => {
     .includes(gender);
 };
 
-
 const parseDescription = (description: unknown): string => {
-  if (!isString(description)) {
+  if (!isString(description) || description.length <= 3) {
     throw new Error("Incorrect or missing description: " + description);
   }
   return description;
 };
 
 const parseSpecialist = (specialist: unknown): string => {
-  if (!isString(specialist)) {
-    throw new Error("Incorrect or missing description: " + specialist);
+  if (!isString(specialist) || specialist.length <= 3) {
+    throw new Error("Incorrect or missing specialist name: " + specialist);
   }
   return specialist;
 };
 
-const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
-  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
-    // we will just trust the data to be in correct form
-    return [] as Array<Diagnosis['code']>;
+const parseDiagnosisCodes = (object: unknown): Array<Diagnosis["code"]> => {
+  if (!object || typeof object !== "object" || !("diagnosisCodes" in object)) {
+    return [] as Array<Diagnosis["code"]>;
   }
 
-  return object.diagnosisCodes as Array<Diagnosis['code']>;
+  return object.diagnosisCodes as Array<Diagnosis["code"]>;
 };
-
 
 const isBaseEntry = (object: unknown): object is BaseEntryWithoutId => {
   const baseEntry = object as BaseEntryWithoutId;
@@ -132,45 +129,46 @@ const toNewEntry = (object: unknown): NewEntryWithoutId => {
   if (!isBaseEntry(object)) {
     throw new Error("Incorrect or missing base entry fields");
   }
+  if ("description" in object && "date" in object && "specialist" in object) {
+    const baseEntry: BaseEntryWithoutId = {
+      description: parseDescription(object.description),
+      date: parseDate(object.date),
+      specialist: parseSpecialist(object.specialist),
+      diagnosisCodes: parseDiagnosisCodes(object),
+    };
 
-  const baseEntry: BaseEntryWithoutId = {
-    description: parseDescription(object.description),
-    date: parseDate(object.date),
-    specialist: parseSpecialist(object.specialist),
-    diagnosisCodes: parseDiagnosisCodes(object),
-  };
-
-  switch ((object as Entry).type) {
-    case "HealthCheck":
-      return {
-        ...baseEntry,
-        type: "HealthCheck",
-        healthCheckRating: parseHealthCheckRating(
-          (object as HealthCheckEntry).healthCheckRating,
-        ),
-      };
-    case "OccupationalHealthcare":
-      return {
-        ...baseEntry,
-        type: "OccupationalHealthcare",
-        employerName: parseName(
-          (object as OccupationalHealthcareEntry).employerName,
-        ),
-        sickLeave: parseSickLeave(
-          (object as OccupationalHealthcareEntry).sickLeave,
-        ),
-      };
-    case "Hospital":
-      return {
-        ...baseEntry,
-        type: "Hospital",
-        discharge: parseDischarge((object as HospitalEntry).discharge),
-      };
-    default:
-      throw new Error("Invalid entry type");
+    switch ((object as Entry).type) {
+      case "HealthCheck":
+        return {
+          ...baseEntry,
+          type: "HealthCheck",
+          healthCheckRating: parseHealthCheckRating(
+            (object as HealthCheckEntry).healthCheckRating,
+          ),
+        };
+      case "OccupationalHealthcare":
+        return {
+          ...baseEntry,
+          type: "OccupationalHealthcare",
+          employerName: parseName(
+            (object as OccupationalHealthcareEntry).employerName,
+          ),
+          sickLeave: parseSickLeave(
+            (object as OccupationalHealthcareEntry).sickLeave,
+          ),
+        };
+      case "Hospital":
+        return {
+          ...baseEntry,
+          type: "Hospital",
+          discharge: parseDischarge((object as HospitalEntry).discharge),
+        };
+      default:
+        throw new Error("Invalid entry type");
+    }
   }
+  throw new Error("Incorrect data: Some fields may be missing");
 };
-
 
 // const assertNever = (value: never): never => {
 //   throw new Error(
@@ -178,13 +176,11 @@ const toNewEntry = (object: unknown): NewEntryWithoutId => {
 //   );
 // };
 
-
-
 const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
   if (
     rating === undefined ||
     rating === null ||
-    typeof rating !== 'number' ||
+    typeof rating !== "number" ||
     !Object.values(HealthCheckRating).includes(rating)
   ) {
     throw new Error("Incorrect or missing health rating " + rating);
@@ -193,7 +189,9 @@ const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
 };
 
 const parseSickLeave = (sickLeave: unknown): SickLeave | undefined => {
-  if (!sickLeave) { return undefined; }
+  if (!sickLeave) {
+    return undefined;
+  }
   if (
     typeof sickLeave !== "object" ||
     !("startDate" in sickLeave) ||
