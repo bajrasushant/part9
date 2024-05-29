@@ -192,18 +192,28 @@ const parseSickLeave = (sickLeave: unknown): SickLeave | undefined => {
   if (!sickLeave) {
     return undefined;
   }
-  if (
-    typeof sickLeave !== "object" ||
-    !("startDate" in sickLeave) ||
-    !("endDate" in sickLeave) ||
-    !isString(sickLeave.startDate) ||
-    !isString(sickLeave.endDate) ||
-    !isDate(sickLeave.startDate) ||
-    !isDate(sickLeave.endDate)
-  ) {
-    throw new Error("Incorrect sick leave: " + JSON.stringify(sickLeave));
+  if (typeof sickLeave === "object") {
+    const { startDate, endDate } = sickLeave as SickLeave;
+    if (startDate && endDate) {
+      return {
+        startDate: parseDate(startDate),
+        endDate: parseDate(endDate),
+      };
+    }
+    if (startDate) {
+      return {
+        startDate: parseDate(startDate),
+        endDate: "",
+      };
+    }
+
+    // If only endDate is provided, return it with an empty startDate
+    if (endDate) {
+      throw new Error("Incorrect format no sickleave start date");
+    }
+    return undefined;
   }
-  return sickLeave as SickLeave;
+  throw new Error("Incorrect sick leave" + JSON.stringify(sickLeave));
 };
 
 const parseDischarge = (discharge: unknown): Discharge => {

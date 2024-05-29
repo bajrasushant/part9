@@ -1,14 +1,14 @@
-import MaleIcon from "@mui/icons-material/Male";
-import TransgenderIcon from "@mui/icons-material/Transgender";
-import FemaleIcon from "@mui/icons-material/Female";
-
-import { EntryWithoutId, HealthCheckRating, Patient } from "../../types";
+import {
+  EntryWithoutId,
+  Patient,
+} from "../../types";
 import { Alert, Box, Divider, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useMatch } from "react-router-dom";
 import patientService from "../../services/patients";
 import EntriesDetail from "./EntriesDetail";
 import AddEntryForm from "../AddEntryForm";
+import BaseDetail from "./BaseDetail";
 
 const PatientDetail = () => {
   const match = useMatch("/patients/:id");
@@ -26,50 +26,15 @@ const PatientDetail = () => {
     }
   }, [id]);
 
-  const [newHealthEntry, setNewHealthEntry] = useState<EntryWithoutId>({
-    description: "",
-    date: "",
-    specialist: "",
-    healthCheckRating: HealthCheckRating.Healthy,
-    diagnosisCodes: [],
-    type: "HealthCheck",
-  });
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setNewHealthEntry((prev) => ({
-      ...prev,
-      [name]:
-        name === "healthCheckRating"
-          ? Number(value)
-          : name === "diagnosisCodes"
-            ? value.split(",").map((code) => code.trim())
-            : value,
-    }));
-  };
-
-  const resetForm = () => {
-    setNewHealthEntry({
-      description: "",
-      date: "",
-      specialist: "",
-      healthCheckRating: HealthCheckRating.Healthy,
-      diagnosisCodes: [],
-      type: "HealthCheck",
-    });
-  };
-
-  const newEntryCreate = async (event: React.SyntheticEvent) => {
-    event.preventDefault();
-    console.log(newHealthEntry);
+  const newEntryCreate = async (newEntry: EntryWithoutId) => {
+    console.log(newEntry);
     try {
-      const data = await patientService.createNewEntry(newHealthEntry, id!);
+      const data = await patientService.createNewEntry(newEntry, id!);
       if (data) {
         setPatient((prev) => ({
           ...prev!,
           entries: prev!.entries.concat(data),
         }));
-        resetForm();
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -94,29 +59,9 @@ const PatientDetail = () => {
       {error && <Alert severity="error">{error}</Alert>}
       {patient ? (
         <>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Typography variant="h5">{patient.name}</Typography>
-            <Box sx={{ marginLeft: "20px" }}>
-              {patient.gender.toLowerCase() === "male" && <MaleIcon />}
-              {patient.gender.toLowerCase() === "female" && <FemaleIcon />}{" "}
-              {patient.gender.toLowerCase() !== "male" &&
-                patient.gender.toLowerCase() !== "female" && (
-                  <TransgenderIcon />
-                )}
-            </Box>
-          </Box>
+          <BaseDetail patient={patient} />
           <Divider sx={{ marginY: "10px" }} />
-          <Typography variant="body1">ssn: {patient.ssn}</Typography>
-          <Typography variant="body1">
-            occupation: {patient.occupation}
-          </Typography>
-          <Divider sx={{ marginY: "10px" }} />
-          <AddEntryForm
-            resetForm={resetForm}
-            newEntry={newHealthEntry}
-            handleChange={handleChange}
-            handleSubmit={newEntryCreate}
-          />
+          <AddEntryForm handleSubmit={newEntryCreate} />
           <Divider sx={{ marginY: "10px" }} />
           <EntriesDetail entries={patient.entries} />
         </>

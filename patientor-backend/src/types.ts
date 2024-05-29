@@ -21,8 +21,8 @@ export interface HealthCheckEntry extends BaseEntry {
 }
 
 export interface SickLeave {
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface OccupationalHealthcareEntry extends BaseEntry {
