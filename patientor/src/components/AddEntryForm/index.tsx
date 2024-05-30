@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import {
   BaseEntryWithoutId,
+  Diagnosis,
   EntryWithoutId,
   HealthCheckRating,
   HospitalEntry,
@@ -22,8 +23,9 @@ import AddOccupationalEntryForm from "./AddOccupationalEntryForm";
 
 interface AddEntryFormProps {
   handleSubmit: (entry: EntryWithoutId) => void;
+  diagnoses: Diagnosis[];
 }
-const AddEntryForm = ({ handleSubmit }: AddEntryFormProps) => {
+const AddEntryForm = ({ handleSubmit, diagnoses }: AddEntryFormProps) => {
   const [formOpen, setFormOpen] = useState(false);
   const formType = ["HealthCheck", "Occupational", "Hospital"];
   const [selectedForm, setSelectedForm] = useState("");
@@ -94,32 +96,29 @@ const AddEntryForm = ({ handleSubmit }: AddEntryFormProps) => {
       const [parentName, childName] = nameParts;
 
       if (parentName === "discharge" && (newEntry as HospitalEntry).discharge) {
-        setNewEntry(prev => ({
+        setNewEntry((prev) => ({
           ...prev,
           discharge: {
             ...(prev as HospitalEntry).discharge,
-            [childName]: value
+            [childName]: value,
           },
         }));
-      } else if (parentName === "sickLeave" && (newEntry as OccupationalHealthcareEntry).sickLeave) {
-        setNewEntry(
-          prev => ({
+      } else if (
+        parentName === "sickLeave" &&
+        (newEntry as OccupationalHealthcareEntry).sickLeave
+      ) {
+        setNewEntry((prev) => ({
           ...prev,
           sickLeave: {
             ...(prev as OccupationalHealthcareEntry).sickLeave,
-            [childName]: value
+            [childName]: value,
           },
         }));
       }
     } else {
       setNewEntry((prev) => ({
         ...prev,
-        [name]:
-          name === "healthCheckRating"
-            ? Number(value)
-            : name === "diagnosisCodes"
-              ? value.split(",").map((code) => code.trim())
-              : value,
+        [name]: name === "healthCheckRating" ? Number(value) : value,
       }));
     }
   };
@@ -146,33 +145,52 @@ const AddEntryForm = ({ handleSubmit }: AddEntryFormProps) => {
     setNewEntry(getInitialState(formType));
   };
 
+  const handleMultiSelectChange = (event: SelectChangeEvent<string[]>) => {
+    const selectedCodes = event.target.value;
+    const codes =
+      typeof selectedCodes === "string"
+        ? selectedCodes.split(",")
+        : selectedCodes;
+    console.log(selectedCodes);
+    setNewEntry((prev) => ({
+      ...prev,
+      diagnosisCodes: codes,
+    }));
+  };
+
   const renderForm = () => {
     switch (selectedForm) {
       case "HealthCheck":
         return (
           <AddHealthEntryForm
+            diagnoses={diagnoses}
             newEntry={newEntry}
             submitForm={submitForm}
             cancelForm={cancelForm}
+            handleSelectChange={handleMultiSelectChange}
             handleChange={handleChange}
           />
         );
       case "Hospital":
         return (
           <AddHospitalEntryForm
+            diagnoses={diagnoses}
             newEntry={newEntry}
             submitForm={submitForm}
             cancelForm={cancelForm}
             handleChange={handleChange}
+            handleSelectChange={handleMultiSelectChange}
             setNewEntry={setNewEntry}
           />
         );
       case "Occupational":
         return (
           <AddOccupationalEntryForm
+            diagnoses={diagnoses}
             newEntry={newEntry}
             submitForm={submitForm}
             cancelForm={cancelForm}
+            handleSelectChange={handleMultiSelectChange}
             handleChange={handleChange}
             setNewEntry={setNewEntry}
           />

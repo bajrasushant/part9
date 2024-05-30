@@ -1,10 +1,11 @@
 import {
   Box,
   Button,
+  SelectChangeEvent,
   TextField,
 } from "@mui/material";
 
-import { EntryWithoutId, HealthCheckEntry } from "../../types";
+import { Diagnosis, EntryWithoutId, HealthCheckEntry } from "../../types";
 import BaseEntryForm from "./BaseEntryForm";
 
 interface AddHealthEntryFormProps {
@@ -12,9 +13,11 @@ interface AddHealthEntryFormProps {
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   submitForm: (event: React.SyntheticEvent) => void;
   cancelForm: () => void;
+  diagnoses: Diagnosis[];
+  handleSelectChange: (event: SelectChangeEvent<string[]>) => void;
 }
 
-const AddHealthEntryForm = ({ newEntry, submitForm, handleChange, cancelForm }: AddHealthEntryFormProps) => {
+const AddHealthEntryForm = ({ newEntry, submitForm, handleChange, cancelForm, diagnoses, handleSelectChange }: AddHealthEntryFormProps) => {
 
 
   return (
@@ -29,7 +32,7 @@ const AddHealthEntryForm = ({ newEntry, submitForm, handleChange, cancelForm }: 
         <form onSubmit={submitForm}>
           <b>New HealthCheck Entry</b>
           <div>
-            <BaseEntryForm newEntry={newEntry} handleChange={handleChange} />
+            <BaseEntryForm newEntry={newEntry} handleChange={handleChange} diagnoses={diagnoses} handleSelectChange={handleSelectChange}/>
           </div>
           <div>
             <TextField

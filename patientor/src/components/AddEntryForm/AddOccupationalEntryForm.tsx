@@ -1,6 +1,6 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, SelectChangeEvent, TextField, Typography } from "@mui/material";
 
-import { EntryWithoutId, OccupationalHealthcareEntry } from "../../types";
+import { Diagnosis, EntryWithoutId, OccupationalHealthcareEntry } from "../../types";
 import BaseEntryForm from "./BaseEntryForm";
 
 interface AddOccupationalEntryFormProps {
@@ -9,6 +9,8 @@ interface AddOccupationalEntryFormProps {
   submitForm: (event: React.SyntheticEvent) => void;
   cancelForm: () => void;
   setNewEntry: React.Dispatch<React.SetStateAction<EntryWithoutId>>;
+  diagnoses: Diagnosis[];
+  handleSelectChange: (event: SelectChangeEvent<string[]>) => void;
 }
 
 const AddOccupationalEntryForm = ({
@@ -16,6 +18,8 @@ const AddOccupationalEntryForm = ({
   submitForm,
   handleChange,
   cancelForm,
+  diagnoses,
+  handleSelectChange,
 }: AddOccupationalEntryFormProps) => {
   return (
     <div>
@@ -29,7 +33,7 @@ const AddOccupationalEntryForm = ({
         <form onSubmit={submitForm}>
           <b>New Occupational Entry</b>
           <div>
-            <BaseEntryForm newEntry={newEntry} handleChange={handleChange} />
+            <BaseEntryForm newEntry={newEntry} handleChange={handleChange} diagnoses={diagnoses} handleSelectChange={handleSelectChange} />
           </div>
           <div>
             <TextField
@@ -43,30 +47,39 @@ const AddOccupationalEntryForm = ({
               sx={{ margin: 1 }}
             />
           </div>
-          <div>
-            <TextField
-              name="sickLeave.startDate"
-              value={(newEntry as OccupationalHealthcareEntry).sickLeave?.startDate}
-              id="sickleaveStartDate"
-              label="Sickleave Startdate"
-              variant="standard"
-              onChange={handleChange}
-              fullWidth
-              sx={{ margin: 1 }}
-            />
-          </div>
-          <div>
-            <TextField
-              name="sickLeave.endDate"
-              value={(newEntry as OccupationalHealthcareEntry).sickLeave?.endDate}
-              id="sickleaveEndDate"
-              label="Sickleave Enddate"
-              variant="standard"
-              onChange={handleChange}
-              fullWidth
-              sx={{ margin: 1 }}
-            />
-          </div>
+          <Box sx={{ display: 'flex', flexDirection: 'column', margin: 1 }}>
+            <Typography variant="subtitle1" sx={{ color: 'grey' }}>Sickleave</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <TextField
+                type="date"
+                name="sickLeave.startDate"
+                value={(newEntry as OccupationalHealthcareEntry).sickLeave?.startDate}
+                id="sickleaveStartDate"
+                label="Start date"
+                variant="standard"
+                onChange={handleChange}
+                fullWidth
+                sx={{ margin: 1 }}
+                InputLabelProps={{
+                  shrink: true
+                }}
+              />
+              <TextField
+                type="date"
+                name="sickLeave.endDate"
+                value={(newEntry as OccupationalHealthcareEntry).sickLeave?.endDate}
+                id="sickleaveEndDate"
+                label="End date"
+                variant="standard"
+                onChange={handleChange}
+                fullWidth
+                sx={{ margin: 1 }}
+                InputLabelProps={{
+                  shrink: true
+                }}
+              />
+            </Box>
+          </Box>
           <div
             style={{
               display: "flex",

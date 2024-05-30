@@ -1,6 +1,6 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, SelectChangeEvent, TextField } from "@mui/material";
 
-import { EntryWithoutId, HospitalEntry } from "../../types";
+import { Diagnosis, EntryWithoutId, HospitalEntry } from "../../types";
 import BaseEntryForm from "./BaseEntryForm";
 
 interface AddHospitalEntryFormProps {
@@ -9,6 +9,8 @@ interface AddHospitalEntryFormProps {
   submitForm: (event: React.SyntheticEvent) => void;
   cancelForm: () => void;
   setNewEntry: React.Dispatch<React.SetStateAction<EntryWithoutId>>;
+  diagnoses: Diagnosis[];
+  handleSelectChange: (event: SelectChangeEvent<string[]>) => void;
 }
 
 const AddHospitalEntryForm = ({
@@ -16,6 +18,8 @@ const AddHospitalEntryForm = ({
   submitForm,
   handleChange,
   cancelForm,
+  diagnoses,
+  handleSelectChange
 }: AddHospitalEntryFormProps) => {
   return (
     <div>
@@ -29,10 +33,11 @@ const AddHospitalEntryForm = ({
         <form onSubmit={submitForm}>
           <b>New Hospital Entry</b>
           <div>
-            <BaseEntryForm newEntry={newEntry} handleChange={handleChange} />
+            <BaseEntryForm newEntry={newEntry} handleChange={handleChange} diagnoses={diagnoses} handleSelectChange={handleSelectChange}/>
           </div>
           <div>
             <TextField
+              type="date"
               name="discharge.date"
               value={(newEntry as HospitalEntry).discharge.date}
               id="dischargeDate"
@@ -41,6 +46,9 @@ const AddHospitalEntryForm = ({
               onChange={handleChange}
               fullWidth
               sx={{ margin: 1 }}
+              InputLabelProps={{
+                shrink: true
+              }}
             />
           </div>
           <div>

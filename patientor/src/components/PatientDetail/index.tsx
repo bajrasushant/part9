@@ -1,7 +1,9 @@
 import {
+    Diagnosis,
   EntryWithoutId,
   Patient,
 } from "../../types";
+import diagnosisService from "../../services/diagnosis";
 import { Alert, Box, Divider, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useMatch } from "react-router-dom";
@@ -15,6 +17,17 @@ const PatientDetail = () => {
   const id = match?.params.id;
   const [patient, setPatient] = useState<Patient | undefined>(undefined);
   const [error, setError] = useState("");
+
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+
+  useEffect(() => {
+    const fetchedDiagnosisList = async () => {
+      const fetchedDiagnoses = await diagnosisService.getAll();
+      setDiagnoses(fetchedDiagnoses);
+    };
+
+    void fetchedDiagnosisList();
+  }, []);
 
   useEffect(() => {
     const fetchPatient = async (patientId: string) => {
@@ -61,9 +74,9 @@ const PatientDetail = () => {
         <>
           <BaseDetail patient={patient} />
           <Divider sx={{ marginY: "10px" }} />
-          <AddEntryForm handleSubmit={newEntryCreate} />
+          <AddEntryForm diagnoses={diagnoses} handleSubmit={newEntryCreate} />
           <Divider sx={{ marginY: "10px" }} />
-          <EntriesDetail entries={patient.entries} />
+          <EntriesDetail entries={patient.entries} diagnoses={diagnoses} />
         </>
       ) : (
         <Typography>No patient data</Typography>

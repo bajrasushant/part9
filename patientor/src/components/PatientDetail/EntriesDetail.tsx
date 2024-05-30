@@ -1,28 +1,17 @@
 import { Box, Typography } from "@mui/material";
 import { Diagnosis, Entry } from "../../types";
-import { useEffect, useState } from "react";
-import diagnosisService from "../../services/diagnosis";
 import HospitalEntry from "./HospitalEntry";
 import OccupationalEntry from "./OccupationalEntry";
 import RatingHealthCheckEntry from "./RatingHealthCheckEntry";
 
 interface EntriesProps {
   entries: Entry[];
+  diagnoses: Diagnosis[];
 }
 
 const EntriesDetail = (props: EntriesProps) => {
-  const { entries } = props;
+  const { entries, diagnoses } = props;
 
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
-
-  useEffect(() => {
-    const fetchedDiagnosisList = async () => {
-      const fetchedDiagnoses = await diagnosisService.getAll();
-      setDiagnoses(fetchedDiagnoses);
-    };
-
-    void fetchedDiagnosisList();
-  }, []);
 
   const assertNever = (value: never): never => {
     throw new Error(

@@ -1,12 +1,29 @@
-import { TextField } from "@mui/material";
-import { BaseEntryWithoutId } from "../../types";
+import {
+  Checkbox,
+  FormControl,
+  InputLabel,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from "@mui/material";
+import { BaseEntryWithoutId, Diagnosis } from "../../types";
 
 interface BaseEntryFormProps {
   newEntry: BaseEntryWithoutId;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  diagnoses: Diagnosis[];
+  handleSelectChange: (event: SelectChangeEvent<string[]>) => void;
 }
 
-const BaseEntryForm = ({newEntry, handleChange}: BaseEntryFormProps) => {
+const BaseEntryForm = ({
+  newEntry,
+  handleChange,
+  diagnoses,
+  handleSelectChange,
+}: BaseEntryFormProps) => {
   return (
     <>
       <div>
@@ -23,14 +40,17 @@ const BaseEntryForm = ({newEntry, handleChange}: BaseEntryFormProps) => {
       </div>
       <div>
         <TextField
-          id="date"
+          type="date"
           name="date"
-          value={newEntry.date}
           label="Date"
+          value={newEntry.date}
           variant="standard"
           fullWidth
           onChange={handleChange}
           sx={{ margin: 1 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
       </div>
       <div>
@@ -43,10 +63,10 @@ const BaseEntryForm = ({newEntry, handleChange}: BaseEntryFormProps) => {
           variant="standard"
           fullWidth
           sx={{ margin: 1 }}
-        />
+        />{" "}
       </div>
       <div>
-        <TextField
+        {/* <TextField
           id="diagnosis-codes"
           name="diagnosisCodes"
           value={newEntry.diagnosisCodes}
@@ -56,7 +76,27 @@ const BaseEntryForm = ({newEntry, handleChange}: BaseEntryFormProps) => {
           onChange={handleChange}
           fullWidth
           sx={{ margin: 1 }}
-        />
+        /> */}
+
+        <FormControl sx={{ m: 1, minWidth: "300px" }}>
+          <InputLabel>Diagnosis Codes</InputLabel>
+          <Select
+            multiple
+            value={newEntry.diagnosisCodes}
+            onChange={handleSelectChange}
+            input={<OutlinedInput label="Diagnosis Codes:" />}
+            renderValue={(selected) => selected.join(", ")}
+          >
+            {diagnoses.map((diagnosis) => (
+              <MenuItem key={diagnosis.code} value={diagnosis.code}>
+                <Checkbox
+                  checked={newEntry.diagnosisCodes?.includes(diagnosis.code)}
+                />
+                <ListItemText primary={`${diagnosis.code} ${diagnosis.name}`} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </div>
     </>
   );
